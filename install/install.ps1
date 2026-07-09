@@ -4,13 +4,16 @@ $ErrorActionPreference = "Stop"
 $Pkg = "@hpp-io/x402-mcp-bridge"
 Write-Host "Installing hpp-x402 ($Pkg)…"
 
+$ReqsUrl = "https://github.com/hpp-io/x402-tools#system-requirements"
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
   Write-Host "X Node.js not found - hpp-x402 needs Node 20+. Install from https://nodejs.org and re-run."
+  Write-Host "  Requirements: $ReqsUrl"
   exit 1
 }
 $major = [int](node -p "process.versions.node.split('.')[0]")
 if ($major -lt 20) {
   Write-Host "X Node $(node -v) is too old - need 20+. Please upgrade."
+  Write-Host "  Requirements: $ReqsUrl"
   exit 1
 }
 

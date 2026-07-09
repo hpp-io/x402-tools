@@ -9,14 +9,17 @@ set -e
 PKG="@hpp-io/x402-mcp-bridge"
 echo "Installing hpp-x402 (${PKG})…"
 
+REQS_URL="https://github.com/hpp-io/x402-tools#system-requirements"
 if ! command -v node >/dev/null 2>&1; then
   echo "✗ Node.js not found — hpp-x402 needs Node 20+."
   echo "  Install it from https://nodejs.org (or: brew install node / use nvm), then re-run."
+  echo "  Requirements: ${REQS_URL}"
   exit 1
 fi
 NODE_MAJOR=$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)
 if [ "$NODE_MAJOR" -lt 20 ]; then
   echo "✗ Node $(node -v) is too old — need 20+. Please upgrade and re-run."
+  echo "  Requirements: ${REQS_URL}"
   exit 1
 fi
 

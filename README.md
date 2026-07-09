@@ -2,6 +2,36 @@
 
 Public tools & resources for **HPP x402** — the agent payment rail on HPP.
 
+## System requirements
+
+| | Requirement |
+|---|---|
+| **Node.js** | 20 or newer (check with `node -v`). Install from [nodejs.org](https://nodejs.org), `brew install node`, or [nvm](https://github.com/nvm-sh/nvm). |
+| **npm** | Bundled with Node.js. |
+| **OS** | macOS, Linux, or Windows. |
+| **Wallet storage** | An OS keychain — macOS Keychain / Linux gnome-keyring / Windows Credential Manager. Needed by `setup` and `wallet` to store your key. |
+
+The installer only checks for Node and runs `npm i -g` — it does **not** install
+Node for you. Install Node first (above), then run the one-liner.
+
+### Headless / server / CI (no keychain)
+
+A headless box (no desktop) has no OS keychain, so `setup`/`wallet` can't store a
+key there. Use one of:
+
+```bash
+hpp-x402 setup --print-key    # prints a raw key instead of using the keychain
+# or: export DELEGATE_PRIVATE_KEY=0x...   and skip key generation
+```
+
+Read-only commands (`discover`, `status`, `--help`) work anywhere.
+
+To try the CLI without touching the host at all, run it in Docker:
+
+```bash
+docker run --rm node:20 bash -c 'npm i -g @hpp-io/x402-mcp-bridge && hpp-x402 discover --limit 5 && hpp-x402 setup --print-key'
+```
+
 ## Install the CLI
 
 ```bash
