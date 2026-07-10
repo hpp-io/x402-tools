@@ -108,8 +108,8 @@ the whole point: your agent transacting on its own, inside your cap.
 Prefer the terminal? The same thing without an agent:
 
 ```bash
-hpp-x402 discover --limit 5           # browse live services
-hpp-x402 call <resourceId> --body '{"hi":"there"}'   # pay + call one
+hpp-x402 discover --limit 5                        # browse live services (shows each URL + id)
+hpp-x402 call <url-or-id> --body '{"hi":"there"}'  # pay + call one — a URL, or an id from discover
 ```
 
 ## How your agent reaches services
@@ -179,12 +179,34 @@ Price is in **atomic USDC.e** (6 decimals): `10000` = 0.01. Payments land at
 | `--handler <url>` | echo | Forward the body to your API instead of echoing |
 | `--port <n>` | `4030` | Listen port |
 | `--private` | *(off)* | Don't advertise to the directory (stay unlisted) |
+| `--url <public-url>` | *(request Host)* | Public address to advertise + index (see below) |
 | `--network <id>` · `--asset <addr>` | Sepolia · USDC.e | Chain + token |
 
-**Getting discovered.** By default `serve` advertises discovery metadata, so **after
-your first paid call** the facilitator indexes your service into the public
-directory (`x402-discovery.hpp.io`) — buyers and agents then find it via
-`hpp-x402 discover` / the `hpp_discover` tool. Pass `--private` to stay unlisted.
+**Getting discovered.** `serve` advertises discovery metadata by default, so **after
+your first paid sale settles** the facilitator indexes your service into the public
+directory (`x402-discovery.hpp.io`) — buyers then find it via `hpp-x402 discover`
+(or the `hpp_discover` tool). Indexing follows the on-chain settlement, so it's not
+instant. Pass `--private` to stay unlisted.
+
+**The indexed URL is the address buyers reach you at.** The 402's resource URL is
+derived from the request Host, so a sale that comes in over `localhost` gets listed
+as `localhost` — unreachable for anyone else. For a real public service, put `serve`
+behind a tunnel or reverse proxy and pass `--url` with that public address, so the
+public URL is what's advertised and indexed.
+
+**The full seller → buyer loop (pure CLI):**
+
+```bash
+# seller (add --url https://myservice.example.com when public, behind a tunnel)
+hpp-x402 serve --pay-to 0xYou --price 1000 --port 4055
+
+# buyer — the first sale is by URL (it's not indexed yet); that sale triggers indexing
+hpp-x402 call http://localhost:4055/paid/echo --body '{"hi":"there"}'
+
+# once indexed, anyone can pay it by id
+hpp-x402 discover -t http                        # lists it, with its URL and id
+hpp-x402 call <id> --body '{"hi":"there"}'
+```
 
 **Selling from an agent.** Set `HPP_X402_SELLER=on` and the bridge registers
 `seller_*` tools — `seller_create_requirements`, `seller_generate_402`,
@@ -274,8 +296,8 @@ Run `hpp-x402 <command> --help` for the authoritative, up-to-date flags.
 | `install <host>` | Register the bridge into `claude` / `claude-code` / `cursor` / `windsurf` / `openclaw` |
 | `fund` | Show where to send USDC.e |
 | `status` | Config · wallet balance · reachability |
-| `discover [query]` | Browse/search the HPP service directory |
-| `call <resourceId>` | Pay + call a discovered service |
+| `discover [query]` | Browse/search the HPP service directory (shows each URL + id) |
+| `call <url-or-id>` | Pay + call a service — a URL directly, or a resourceId from discover |
 | `serve` | Run a paid x402 endpoint (become a seller) |
 | `policy` | Per-host spend guardrails |
 | `channel` | Batch-settlement channels |
