@@ -304,7 +304,7 @@ Run `hpp-x402 <command> --help` for the authoritative, up-to-date flags.
 | `install <host>` | Register the bridge into `claude` / `claude-code` / `cursor` / `windsurf` / `openclaw` |
 | `fund` | Show where to send USDC.e |
 | `status` | Config · wallet balance · reachability |
-| `discover [query]` | Browse/search the HPP service directory (shows each URL + id) |
+| `discover [query]` | Browse/search the directory (shows type · scheme · price · URL · id; `--scheme exact\|upto` to filter) |
 | `call <url-or-id>` | Pay + call a service (exact or upto, auto; `--scheme` to force) — a URL, or an id from discover |
 | `serve` | Run a paid x402 endpoint (become a seller; `--scheme exact\|upto`) |
 | `policy` | Per-host spend guardrails |
