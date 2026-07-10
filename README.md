@@ -175,12 +175,20 @@ Price is in **atomic USDC.e** (6 decimals): `10000` = 0.01. Payments land at
 |--------|---------|---------|
 | `--pay-to <addr>` | *(required)* | Where USDC.e is received |
 | `--price <atomic>` | `10000` (0.01) | Price per call, atomic units |
+| `--scheme <exact\|upto>` | `exact` | Pricing model (see below) |
 | `--path <path>` | `/paid/echo` | The paid route |
 | `--handler <url>` | echo | Forward the body to your API instead of echoing |
 | `--port <n>` | `4030` | Listen port |
 | `--private` | *(off)* | Don't advertise to the directory (stay unlisted) |
 | `--url <public-url>` | *(request Host)* | Public address to advertise + index (see below) |
 | `--network <id>` · `--asset <addr>` | Sepolia · USDC.e | Chain + token |
+
+**Pricing model — `exact` vs `upto`.** `exact` (default) charges a fixed price per
+call. `upto` is usage-based: the buyer authorizes *up to* your max and the
+facilitator settles the actual amount — the buyer signs a gasless approval, so they
+need no native gas. Buyers pay either automatically; a buyer only reaches for
+`hpp-x402 call … --scheme <exact|upto>` if a seller offers both and they want to
+force one.
 
 **Getting discovered.** `serve` advertises discovery metadata by default, so **after
 your first paid sale settles** the facilitator indexes your service into the public
@@ -297,8 +305,8 @@ Run `hpp-x402 <command> --help` for the authoritative, up-to-date flags.
 | `fund` | Show where to send USDC.e |
 | `status` | Config · wallet balance · reachability |
 | `discover [query]` | Browse/search the HPP service directory (shows each URL + id) |
-| `call <url-or-id>` | Pay + call a service — a URL directly, or a resourceId from discover |
-| `serve` | Run a paid x402 endpoint (become a seller) |
+| `call <url-or-id>` | Pay + call a service (exact or upto, auto; `--scheme` to force) — a URL, or an id from discover |
+| `serve` | Run a paid x402 endpoint (become a seller; `--scheme exact\|upto`) |
 | `policy` | Per-host spend guardrails |
 | `channel` | Batch-settlement channels |
 | `safe` | Safe / governance wallet setup |
